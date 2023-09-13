@@ -1,8 +1,8 @@
 # OS related
 .DS_Store
 
-# Ruche related
-jobs/
+# Misc
+*ignore**
 
 # IDE related
 .vscode/*
