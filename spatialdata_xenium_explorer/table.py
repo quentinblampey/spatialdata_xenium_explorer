@@ -2,8 +2,10 @@ import anndata
 import numpy as np
 import zarr
 
+from .constants import cell_categories_attrs
 
-def write_features(path, adata: anndata.AnnData):
+
+def write_gene_counts(path, adata: anndata.AnnData):
     counts = adata.layers["counts"]
 
     feature_keys = list(adata.var_names) + ["Total transcripts"]
@@ -64,18 +66,13 @@ def add_group(root: zarr.Group, index: int, values: np.ndarray, categories: list
     group.array("indptr", indptr, dtype="uint32", chunks=(len(indptr),))
 
 
-def write_groups(path: str, adata: anndata.AnnData):
-    ATTRS = {
-        "major_version": 1,
-        "minor_version": 0,
-        "number_groupings": 1,
-        "grouping_names": [],
-        "group_names": [],
-    }
-
+def write_cell_categories(path: str, adata: anndata.AnnData):
     categorical_columns = [
         name for name, cat in adata.obs.dtypes.items() if cat == "category"
     ]
+
+    ATTRS = cell_categories_attrs()
+    ATTRS["number_groupings"] = len(categorical_columns)
 
     with zarr.ZipStore(path, mode="w") as store:
         g = zarr.group(store=store)

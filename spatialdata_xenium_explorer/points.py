@@ -5,19 +5,21 @@ import numpy as np
 import pandas as pd
 import zarr
 
+from .constants import ExplorerConstants
+
 
 def subsample_indices(n_samples, factor: int = 4):
     n_sub = n_samples // factor
     return np.random.choice(n_samples, n_sub, replace=False)
 
 
-MAX_LEVELS = 15
-GRID_SIZE = 250
-QUALITY_SCORE = 40
-
-
 def write_transcripts(
-    path: Path, df: pd.DataFrame, x: str = "x", y: str = "y", gene: str = "gene"
+    path: Path,
+    df: pd.DataFrame,
+    x: str = "x",
+    y: str = "y",
+    gene: str = "gene",
+    max_levels: int = 15,
 ):
     num_transcripts = len(df)
     df[gene] = df[gene].astype("category")
@@ -45,7 +47,7 @@ def write_transcripts(
         [gene_identity[:, 0], np.full(num_transcripts, 65535)], axis=1
     )
     status = np.zeros((num_transcripts, 1))
-    quality_score = np.full((num_transcripts, 1), QUALITY_SCORE)
+    quality_score = np.full((num_transcripts, 1), ExplorerConstants.QUALITY_SCORE)
 
     ATTRS = {
         "codeword_count": num_genes,
@@ -69,7 +71,7 @@ def write_transcripts(
     GRIDS_ATTRS = {
         "grid_key_names": ["grid_x_loc", "grid_y_loc"],
         "grid_zip": False,
-        "grid_size": [GRID_SIZE],
+        "grid_size": [ExplorerConstants.GRID_SIZE],
         "grid_array_shapes": [],
         "grid_number_objects": [],
         "grid_keys": [],
@@ -81,10 +83,10 @@ def write_transcripts(
 
         grids = g.create_group("grids")
 
-        for level in range(MAX_LEVELS):
+        for level in range(max_levels):
             level_group = grids.create_group(level)
 
-            tile_size = GRID_SIZE * 2**level
+            tile_size = ExplorerConstants.GRID_SIZE * 2**level
 
             print(f"Level {level}: {len(location)} transcripts")
 

@@ -5,41 +5,8 @@ import numpy as np
 import zarr
 from shapely.geometry import Polygon
 
+from .constants import cell_summary_attrs, group_attrs
 from .utils import pad
-
-CELLS_SUMMARY_ATTRS = {
-    "column_descriptions": [
-        "Cell centroid in X",
-        "Cell centroid in Y",
-        "Cell area",
-        "Nucleus centroid in X",
-        "Nucleus centroid in Y",
-        "Nucleus area",
-        "z_level",
-    ],
-    "column_names": [
-        "cell_centroid_x",
-        "cell_centroid_y",
-        "cell_area",
-        "nucleus_centroid_x",
-        "nucleus_centroid_y",
-        "nucleus_area",
-        "z_level",
-    ],
-}
-
-GROUP_ATTRS = {
-    "major_version": 5,
-    "minor_version": 0,
-    "name": "CellSegmentationDataset",
-    "polygon_set_descriptions": [
-        "NA",
-        "NA",
-    ],
-    "polygon_set_display_names": ["Nucleus boundaries", "Cell boundaries"],
-    "polygon_set_names": ["nucleus", "cell"],
-    "spatial_units": "microns",
-}
 
 
 def write_polygons(path: Path, polygons: list[Polygon], area: np.ndarray) -> None:
@@ -49,6 +16,9 @@ def write_polygons(path: Path, polygons: list[Polygon], area: np.ndarray) -> Non
     num_cells = len(coordinates)
     cells_fourth = ceil(num_cells / 4)
     cells_half = ceil(num_cells / 2)
+
+    CELLS_SUMMARY_ATTRS = cell_summary_attrs()
+    GROUP_ATTRS = group_attrs()
 
     GROUP_ATTRS["number_cells"] = num_cells
 
