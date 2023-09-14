@@ -1,9 +1,9 @@
-# Spatialdata to Xenium Explorer
-Converting any SpatialData object into files that can be open by the Xenium Explorer
+# SpatialData to Xenium Explorer
+Converting any [`SpatialData`](https://github.com/scverse/spatialdata) object into files that can be open by the Xenium Explorer
 
 ## Installation
 
-This repository is currently in development. You can still test it out, but you may exeprience issues.
+This repository is currently in development. You can test it out, but you may exeprience issues.
 
 `pip install git+https://github.com/quentinblampey/spatialdata_xenium_explorer.git`
 
