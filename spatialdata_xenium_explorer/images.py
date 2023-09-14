@@ -24,6 +24,11 @@ def write_multiscale(
     pixelsize: float = 0.2125,
 ):
     print("Writing multiscale image")
+
+    assert isinstance(
+        multiscale, MultiscaleSpatialImage
+    ), f"For now, only `MultiscaleSpatialImage` is supported. Found {type(multiscale)}."
+
     scale_names = list(multiscale.children)
     channel_names = list(multiscale[scale_names[0]].c.values)
 
