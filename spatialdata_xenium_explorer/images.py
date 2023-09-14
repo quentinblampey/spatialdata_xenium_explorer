@@ -2,10 +2,11 @@ import numpy as np
 import tifffile as tf
 from multiscale_spatial_image import MultiscaleSpatialImage
 
-from .constants import image_metadata, image_options
+from ._constants import image_metadata, image_options
 
 
 def _astype_uint8(arr: np.ndarray) -> np.ndarray:
+    print(f"   Image of shape {arr.shape}")
     assert np.issubdtype(
         arr.dtype, np.integer
     ), f"The image dtype has to be an integer dtype. Found {arr.dtype}"
@@ -22,6 +23,7 @@ def write_multiscale(
     multiscale: MultiscaleSpatialImage,
     pixelsize: float = 0.2125,
 ):
+    print("Writing multiscale image")
     scale_names = list(multiscale.children)
     channel_names = list(multiscale[scale_names[0]].c.values)
 

@@ -11,10 +11,10 @@ from . import (
     write_polygons,
     write_transcripts,
 )
-from .constants import FileNames, experiment_dict
+from ._constants import FileNames, experiment_dict
 
 
-def _order_instances(sdata: SpatialData, shapes_key: str):
+def _reorder_instances(sdata: SpatialData, shapes_key: str):
     adata = sdata.table
 
     instance_key = adata.uns["spatialdata_attrs"]["instance_key"]
@@ -34,6 +34,7 @@ def write(
     points_key: str,
     gene_column: str,
     layer: str | None = None,
+    polygon_max_vertices: int = 13,
 ) -> None:
     """
     Transform a SpatialData object into inputs for the Xenium Explorer.
@@ -47,6 +48,7 @@ def write(
         points_key: Name of the transcripts (key of `sdata.points`).
         gene_column: Column name of the points dataframe containing the gene names.
         layer: Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.
+        polygon_max_vertices: Maximum number of vertices for the cell polygons.
     """
     path: Path = Path(path)
     assert (
@@ -55,7 +57,7 @@ def write(
 
     path.mkdir(parents=True, exist_ok=True)
 
-    adata = _order_instances(sdata, shapes_key)
+    adata = _reorder_instances(sdata, shapes_key)
 
     EXPERIMENT = experiment_dict(image_key, shapes_key, adata.n_obs)
     with open(path / FileNames.METADATA, "w") as f:
@@ -68,9 +70,9 @@ def write(
     set_transformation(sdata.images[image_key], Identity(), pixels_cs)
 
     gdf = sdata.transform_element_to_coordinate_system(sdata.shapes[shapes_key], pixels_cs)
-    write_polygons(path / FileNames.SHAPES, gdf.geometry)
-
-    write_multiscale(path / FileNames.IMAGE, sdata.images[image_key])
+    write_polygons(path / FileNames.SHAPES, gdf.geometry, polygon_max_vertices)
 
     df = sdata.transform_element_to_coordinate_system(sdata.points[points_key], pixels_cs)
     write_transcripts(path / FileNames.POINTS, df, gene_column)
+
+    write_multiscale(path / FileNames.IMAGE, sdata.images[image_key])

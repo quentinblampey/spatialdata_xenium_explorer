@@ -3,10 +3,11 @@ import zarr
 from anndata import AnnData
 from scipy.sparse import csr_matrix
 
-from .constants import cell_categories_attrs
+from ._constants import cell_categories_attrs
 
 
 def write_gene_counts(path: str, adata: AnnData, layer: str | None) -> None:
+    print(f"Writing table of {adata.n_vars} genes")
     counts = adata.X if layer is None else adata.layers[layer]
     counts = csr_matrix(counts)
 
@@ -74,7 +75,7 @@ def write_cell_categories(path: str, adata: AnnData) -> None:
     # TODO: consider also columns that can be transformed to a categorical column?
     cat_columns = [name for name, cat in adata.obs.dtypes.items() if cat == "category"]
 
-    print(f"Saving {len(cat_columns)} cell categories: {', '.join(cat_columns)}")
+    print(f"Writing {len(cat_columns)} cell categories: {', '.join(cat_columns)}")
 
     ATTRS = cell_categories_attrs()
     ATTRS["number_groupings"] = len(cat_columns)

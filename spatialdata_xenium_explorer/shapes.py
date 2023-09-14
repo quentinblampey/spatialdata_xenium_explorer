@@ -6,7 +6,7 @@ import numpy as np
 import zarr
 from shapely.geometry import Polygon
 
-from .constants import cell_summary_attrs, group_attrs
+from ._constants import ExplorerConstants, cell_summary_attrs, group_attrs
 
 
 def pad_polygon(polygon: Polygon, max_vertices: int, tolerance: float = 1) -> np.ndarray:
@@ -19,9 +19,7 @@ def pad_polygon(polygon: Polygon, max_vertices: int, tolerance: float = 1) -> np
         return coords.flatten()
 
     if n_vertices < max_vertices:
-        return np.pad(
-            coords, ((0, max_vertices - n_vertices), (0, 0)), mode="edge"
-        ).flatten()
+        return np.pad(coords, ((0, max_vertices - n_vertices), (0, 0)), mode="edge").flatten()
 
     # TODO: improve it: how to choose the right tolerance?
     polygon = polygon.simplify(tolerance=tolerance)
@@ -29,8 +27,9 @@ def pad_polygon(polygon: Polygon, max_vertices: int, tolerance: float = 1) -> np
 
 
 def write_polygons(path: Path, polygons: Iterable[Polygon], max_vertices: int) -> None:
+    print(f"Writing {len(polygons)} cell polygons")
     coordinates = np.stack([pad_polygon(p, max_vertices) for p in polygons])
-    coordinates /= 4.705882
+    coordinates /= ExplorerConstants.MICRONS_TO_PIXELS
 
     num_cells = len(coordinates)
     cells_fourth = ceil(num_cells / 4)

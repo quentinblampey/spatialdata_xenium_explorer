@@ -5,7 +5,7 @@ import dask.dataframe as dd
 import numpy as np
 import zarr
 
-from .constants import ExplorerConstants
+from ._constants import ExplorerConstants
 
 
 def subsample_indices(n_samples, factor: int = 4):
@@ -20,18 +20,17 @@ def write_transcripts(
     max_levels: int = 15,
 ):
     # TODO: make everything using dask instead of pandas
+    print(f"Writing {len(df)} transcripts")
     df = df.compute()
 
     num_transcripts = len(df)
     df[gene] = df[gene].astype("category")
 
     location = df[["x", "y"]]
+    location /= ExplorerConstants.MICRONS_TO_PIXELS
     location = np.concatenate([location, np.zeros((num_transcripts, 1))], axis=1)
 
     xmax, ymax = location[:, :2].max(axis=0)
-
-    assert location[:, 0].min() >= 0
-    assert location[:, 1].min() >= 0
 
     gene_names = list(df[gene].cat.categories)
     num_genes = len(gene_names)
@@ -40,13 +39,9 @@ def write_transcripts(
 
     valid = np.ones((num_transcripts, 1))
     uuid = np.stack([np.arange(num_transcripts), np.full(num_transcripts, 65535)], axis=1)
-    transcript_id = np.stack(
-        [np.arange(num_transcripts), np.full(num_transcripts, 65535)], axis=1
-    )
+    transcript_id = np.stack([np.arange(num_transcripts), np.full(num_transcripts, 65535)], axis=1)
     gene_identity = df[gene].cat.codes.values[:, None]
-    codeword_identity = np.stack(
-        [gene_identity[:, 0], np.full(num_transcripts, 65535)], axis=1
-    )
+    codeword_identity = np.stack([gene_identity[:, 0], np.full(num_transcripts, 65535)], axis=1)
     status = np.zeros((num_transcripts, 1))
     quality_score = np.full((num_transcripts, 1), ExplorerConstants.QUALITY_SCORE)
 
@@ -55,9 +50,7 @@ def write_transcripts(
         "codeword_gene_mapping": codeword_gene_mapping,
         "codeword_gene_names": gene_names,
         "gene_names": gene_names,
-        "gene_index_map": {
-            name: index for name, index in zip(gene_names, codeword_gene_mapping)
-        },
+        "gene_index_map": {name: index for name, index in zip(gene_names, codeword_gene_mapping)},
         "number_genes": num_genes,
         "spatial_units": "micron",
         "coordinate_space": "refined-final_global_micron",
@@ -85,11 +78,10 @@ def write_transcripts(
         grids = g.create_group("grids")
 
         for level in range(max_levels):
+            print(f"   Level {level}: {len(location)} transcripts")
             level_group = grids.create_group(level)
 
             tile_size = ExplorerConstants.GRID_SIZE * 2**level
-
-            print(f"Level {level}: {len(location)} transcripts")
 
             indices = np.floor(location[:, :2] / tile_size).clip(0).astype(int)
             tiles_str_indices = np.array([f"{tx},{ty}" for (tx, ty) in indices])

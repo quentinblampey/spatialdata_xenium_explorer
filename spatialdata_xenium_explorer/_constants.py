@@ -10,6 +10,7 @@ class FileNames:
 class ExplorerConstants:
     GRID_SIZE = 250
     QUALITY_SCORE = 40
+    MICRONS_TO_PIXELS = 4.705882
 
 
 class Versions:
