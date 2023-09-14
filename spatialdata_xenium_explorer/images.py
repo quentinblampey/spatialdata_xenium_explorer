@@ -7,7 +7,7 @@ from multiscale_spatial_image import MultiscaleSpatialImage
 from .constants import image_metadata, image_options
 
 
-def to_uint8(arr):
+def to_uint8(arr: np.ndarray) -> np.ndarray:
     print(f"Writing image of shape {arr.shape}")
     return (arr // 256).astype(np.uint8)
 

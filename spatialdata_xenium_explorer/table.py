@@ -1,11 +1,11 @@
-import anndata
 import numpy as np
 import zarr
+from anndata import AnnData
 
 from .constants import cell_categories_attrs
 
 
-def write_gene_counts(path, adata: anndata.AnnData):
+def write_gene_counts(path: str, adata: AnnData) -> None:
     counts = adata.layers["counts"]
 
     feature_keys = list(adata.var_names) + ["Total transcripts"]
@@ -54,7 +54,9 @@ def write_gene_counts(path, adata: anndata.AnnData):
         cells_group.array("indptr", indptr, dtype="uint32", chunks=indptr.shape)
 
 
-def add_group(root: zarr.Group, index: int, values: np.ndarray, categories: list[str]):
+def _write_categorical_column(
+    root: zarr.Group, index: int, values: np.ndarray, categories: list[str]
+) -> None:
     group = root.create_group(index)
     values_indices = [np.where(values == cat)[0] for cat in categories]
     values_cum_len = np.cumsum([len(indices) for indices in values_indices])
@@ -66,23 +68,23 @@ def add_group(root: zarr.Group, index: int, values: np.ndarray, categories: list
     group.array("indptr", indptr, dtype="uint32", chunks=(len(indptr),))
 
 
-def write_cell_categories(path: str, adata: anndata.AnnData):
-    categorical_columns = [
-        name for name, cat in adata.obs.dtypes.items() if cat == "category"
-    ]
+def write_cell_categories(path: str, adata: AnnData) -> None:
+    cat_columns = [name for name, cat in adata.obs.dtypes.items() if cat == "category"]
+
+    print(f"Saving {len(cat_columns)} cell categories: {', '.join(cat_columns)}")
 
     ATTRS = cell_categories_attrs()
-    ATTRS["number_groupings"] = len(categorical_columns)
+    ATTRS["number_groupings"] = len(cat_columns)
 
     with zarr.ZipStore(path, mode="w") as store:
         g = zarr.group(store=store)
         cell_groups = g.create_group("cell_groups")
 
-        for i, name in enumerate(categorical_columns):
+        for i, name in enumerate(cat_columns):
             categories = list(adata.obs[name].cat.categories)
             ATTRS["grouping_names"].append(name)
             ATTRS["group_names"].append(categories)
 
-            add_group(cell_groups, i, adata.obs[name], categories)
+            _write_categorical_column(cell_groups, i, adata.obs[name], categories)
 
         cell_groups.attrs.put(ATTRS)

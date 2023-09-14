@@ -16,15 +16,13 @@ def subsample_indices(n_samples, factor: int = 4):
 def write_transcripts(
     path: Path,
     df: pd.DataFrame,
-    x: str = "x",
-    y: str = "y",
     gene: str = "gene",
     max_levels: int = 15,
 ):
     num_transcripts = len(df)
     df[gene] = df[gene].astype("category")
 
-    location = df[[x, y]]
+    location = df[["x", "y"]]
     location = np.concatenate([location, np.zeros((num_transcripts, 1))], axis=1)
 
     xmax, ymax = location[:, :2].max(axis=0)

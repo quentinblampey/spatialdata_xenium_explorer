@@ -1,7 +1,10 @@
-class Versions:
-    EXPERIMENT = [2, 0]
-    GROUPS = [5, 0]
-    CELL_CATEGORIES = [1, 0]
+class FileNames:
+    IMAGE = "morphology.ome.tif"
+    POINTS = "transcripts.zarr.zip"
+    SHAPES = "cells.zarr.zip"
+    TABLE = "cell_feature_matrix.zarr.zip"
+    CELL_CATEGORIES = "analysis.zarr.zip"
+    METADATA = "experiment.xenium"
 
 
 class ExplorerConstants:
@@ -9,7 +12,13 @@ class ExplorerConstants:
     QUALITY_SCORE = 40
 
 
-def cell_categories_attrs():
+class Versions:
+    EXPERIMENT = [2, 0]
+    GROUPS = [5, 0]
+    CELL_CATEGORIES = [1, 0]
+
+
+def cell_categories_attrs() -> dict:
     return {
         "major_version": Versions.CELL_CATEGORIES[0],
         "minor_version": Versions.CELL_CATEGORIES[1],
@@ -19,7 +28,7 @@ def cell_categories_attrs():
     }
 
 
-def cell_summary_attrs():
+def cell_summary_attrs() -> dict:
     return {
         "column_descriptions": [
             "Cell centroid in X",
@@ -42,7 +51,7 @@ def cell_summary_attrs():
     }
 
 
-def group_attrs():
+def group_attrs() -> dict:
     return {
         "major_version": Versions.GROUPS[0],
         "minor_version": Versions.GROUPS[1],
@@ -57,13 +66,17 @@ def group_attrs():
     }
 
 
-def experiment_dict():
+def experiment_dict(run_name: str, region_name: str, num_cells: int) -> dict:
     return {
         "major_version": Versions.EXPERIMENT[0],
         "minor_version": Versions.EXPERIMENT[1],
+        "run_name": run_name,
+        "region_name": region_name,
+        "experiment_uuid": "N/A",
+        "panel_tissue_type": "N/A",
         "run_start_time": "N/A",
         "preservation_method": "N/A",
-        "num_cells": 0,
+        "num_cells": num_cells,
         "transcripts_per_cell": 0,
         "transcripts_per_100um": 0,
         "cassette_name": "N/A",
@@ -98,7 +111,7 @@ def experiment_dict():
     }
 
 
-def image_options():
+def image_options() -> dict:
     return {
         "photometric": "minisblack",
         "tile": (1024, 1024),
