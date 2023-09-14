@@ -1,4 +1,4 @@
-# spatialdata_xenium_explorer
+# Spatialdata to Xenium Explorer
 Converting any SpatialData object into files that can be open by the Xenium Explorer
 
 ## Installation
@@ -10,7 +10,11 @@ This repository is currently in development. You can still test it out, but you 
 ## Usage
 
 ```python
+import spatialdata
 import spatialdata_xenium_explorer
+
+sdata = spatialdata.read_zarr("...")
+image_key = "..." # The name of the MultiscaleSpatialImage to be exported
 
 spatialdata_xenium_explorer.write("/path/to/directory", sdata, image_key)
 ```
