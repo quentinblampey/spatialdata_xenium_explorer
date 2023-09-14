@@ -1,8 +1,8 @@
 from math import ceil
 from pathlib import Path
 
+import dask.dataframe as dd
 import numpy as np
-import pandas as pd
 import zarr
 
 from .constants import ExplorerConstants
@@ -15,10 +15,13 @@ def subsample_indices(n_samples, factor: int = 4):
 
 def write_transcripts(
     path: Path,
-    df: pd.DataFrame,
+    df: dd.DataFrame,
     gene: str = "gene",
     max_levels: int = 15,
 ):
+    # TODO: make everything using dask instead of pandas
+    df = df.compute()
+
     num_transcripts = len(df)
     df[gene] = df[gene].astype("category")
 
@@ -178,5 +181,3 @@ def write_transcripts(
             transcript_id = transcript_id[sub_indices]
 
         grids.attrs.put(GRIDS_ATTRS)
-
-        print(g.info)

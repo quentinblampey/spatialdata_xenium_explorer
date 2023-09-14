@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from spatialdata import SpatialData
+from spatialdata.transformations import Identity, set_transformation
 
 from . import (
     write_cell_categories,
@@ -13,7 +14,40 @@ from . import (
 from .constants import FileNames, experiment_dict
 
 
-def write(path: str, sdata: SpatialData, image_key: str, gene_column: str) -> None:
+def _order_instances(sdata: SpatialData, shapes_key: str):
+    adata = sdata.table
+
+    instance_key = adata.uns["spatialdata_attrs"]["instance_key"]
+    region_key = adata.uns["spatialdata_attrs"]["region_key"]
+
+    adata = adata[adata.obs[region_key] == shapes_key].copy()
+    adata.obs.set_index(instance_key, inplace=True)
+    adata = adata[sdata.shapes[shapes_key].index].copy()
+    return adata
+
+
+def write(
+    path: str,
+    sdata: SpatialData,
+    image_key: str,
+    shapes_key: str,
+    points_key: str,
+    gene_column: str,
+    layer: str | None = None,
+) -> None:
+    """
+    Transform a SpatialData object into inputs for the Xenium Explorer.
+    Currently only images of type MultiscaleSpatialImage are supported.
+
+    Args:
+        path: Path to the directory where files will be saved.
+        sdata: SpatialData object.
+        image_key: Name of the image or interest.
+        shapes_key: Name of the cell shapes.
+        points_key: Name of the transcripts (key of `sdata.points`).
+        gene_column: Column name of the points dataframe containing the gene names.
+        layer: Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.
+    """
     path: Path = Path(path)
     assert (
         not path.exists() or path.is_dir()
@@ -21,21 +55,22 @@ def write(path: str, sdata: SpatialData, image_key: str, gene_column: str) -> No
 
     path.mkdir(parents=True, exist_ok=True)
 
-    adata = sdata.table
+    adata = _order_instances(sdata, shapes_key)
 
-    EXPERIMENT = experiment_dict(..., ..., adata.n_obs)
+    EXPERIMENT = experiment_dict(image_key, shapes_key, adata.n_obs)
     with open(path / FileNames.METADATA, "w") as f:
         json.dump(EXPERIMENT, f, indent=4)
 
-    write_gene_counts(path / FileNames.TABLE, adata)
+    write_gene_counts(path / FileNames.TABLE, adata, layer)
     write_cell_categories(path / FileNames.CELL_CATEGORIES, adata)
 
-    polygons = sdata.shapes["..."]
-    # TODO: transform polygon coords to pixel
-    write_polygons(path / FileNames.SHAPES, polygons)
+    pixels_cs = "__pixels"
+    set_transformation(sdata.images[image_key], Identity(), pixels_cs)
 
-    # TODO : make it memory efficient
+    gdf = sdata.transform_element_to_coordinate_system(sdata.shapes[shapes_key], pixels_cs)
+    write_polygons(path / FileNames.SHAPES, gdf.geometry)
+
     write_multiscale(path / FileNames.IMAGE, sdata.images[image_key])
 
-    df = sdata.points["..."]
+    df = sdata.transform_element_to_coordinate_system(sdata.points[points_key], pixels_cs)
     write_transcripts(path / FileNames.POINTS, df, gene_column)

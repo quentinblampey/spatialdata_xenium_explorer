@@ -18,3 +18,5 @@ image_key = "..." # The name of the MultiscaleSpatialImage to be exported
 
 spatialdata_xenium_explorer.write("/path/to/directory", sdata, image_key)
 ```
+
+This will create up to 6 files, among which a file called `experiment.xenium`. Double-click on this file to open it on the [Xenium Explorer](https://www.10xgenomics.com/support/software/xenium-explorer/downloads) (make sure you have the latest version of the software).

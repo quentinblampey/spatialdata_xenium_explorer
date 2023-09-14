@@ -1,12 +1,14 @@
 import numpy as np
 import zarr
 from anndata import AnnData
+from scipy.sparse import csr_matrix
 
 from .constants import cell_categories_attrs
 
 
-def write_gene_counts(path: str, adata: AnnData) -> None:
-    counts = adata.layers["counts"]
+def write_gene_counts(path: str, adata: AnnData, layer: str | None) -> None:
+    counts = adata.X if layer is None else adata.layers[layer]
+    counts = csr_matrix(counts)
 
     feature_keys = list(adata.var_names) + ["Total transcripts"]
     feature_ids = feature_keys
@@ -69,6 +71,7 @@ def _write_categorical_column(
 
 
 def write_cell_categories(path: str, adata: AnnData) -> None:
+    # TODO: consider also columns that can be transformed to a categorical column?
     cat_columns = [name for name, cat in adata.obs.dtypes.items() if cat == "category"]
 
     print(f"Saving {len(cat_columns)} cell categories: {', '.join(cat_columns)}")

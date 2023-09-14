@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import tifffile as tf
 from multiscale_spatial_image import MultiscaleSpatialImage
@@ -7,13 +5,20 @@ from multiscale_spatial_image import MultiscaleSpatialImage
 from .constants import image_metadata, image_options
 
 
-def to_uint8(arr: np.ndarray) -> np.ndarray:
-    print(f"Writing image of shape {arr.shape}")
-    return (arr // 256).astype(np.uint8)
+def _astype_uint8(arr: np.ndarray) -> np.ndarray:
+    assert np.issubdtype(
+        arr.dtype, np.integer
+    ), f"The image dtype has to be an integer dtype. Found {arr.dtype}"
+
+    if arr.dtype == np.uint8:
+        return arr
+
+    factor = np.iinfo(np.uint8).max / np.iinfo(arr.dtype).max
+    return (arr * factor).astype(np.uint8)
 
 
 def write_multiscale(
-    output_path: Path,
+    path: str,
     multiscale: MultiscaleSpatialImage,
     pixelsize: float = 0.2125,
 ):
@@ -22,9 +27,10 @@ def write_multiscale(
 
     metadata = image_metadata(channel_names, pixelsize)
 
-    with tf.TiffWriter(output_path, bigtiff=True) as tif:
+    # TODO : make it memory efficient
+    with tf.TiffWriter(path, bigtiff=True) as tif:
         tif.write(
-            to_uint8(multiscale[scale_names[0]]["image"].values),
+            _astype_uint8(multiscale[scale_names[0]]["image"].values),
             subifds=len(scale_names) - 1,
             resolution=(1e4 / pixelsize, 1e4 / pixelsize),
             metadata=metadata,
@@ -33,7 +39,7 @@ def write_multiscale(
 
         for i, scale in enumerate(scale_names[1:]):
             tif.write(
-                to_uint8(multiscale[scale]["image"].values),
+                _astype_uint8(multiscale[scale]["image"].values),
                 subfiletype=1,
                 resolution=(
                     1e4 * 2 ** (i + 1) / pixelsize,
