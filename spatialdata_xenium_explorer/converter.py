@@ -43,8 +43,8 @@ def write(
     Args:
         path: Path to the directory where files will be saved.
         sdata: SpatialData object.
-        image_key: Name of the image or interest.
-        shapes_key: Name of the cell shapes.
+        image_key: Name of the image of interest (key of `sdata.images`).
+        shapes_key: Name of the cell shapes (key of `sdata.shapes`).
         points_key: Name of the transcripts (key of `sdata.points`).
         gene_column: Column name of the points dataframe containing the gene names.
         layer: Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.
