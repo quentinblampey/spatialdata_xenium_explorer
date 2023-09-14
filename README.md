@@ -3,7 +3,7 @@ Converting any [`SpatialData`](https://github.com/scverse/spatialdata) object in
 
 ## Installation
 
-This repository is currently in development. You can test it out, but you may experience some issues.
+This package is currently in development. You can test it out, but you may experience some issues.
 
 `pip install git+https://github.com/quentinblampey/spatialdata_xenium_explorer.git`
 
@@ -22,7 +22,9 @@ For more details about the arguments, see the [function docstrings](https://gith
 
 This will create up to 6 files, among which a file called `experiment.xenium`. Double-click on this file to open it on the [Xenium Explorer](https://www.10xgenomics.com/support/software/xenium-explorer/downloads) (make sure you have the latest version of the software).
 
-## Future improvements
+## Future improvements and contributions
+
+Contributions are welcome. Some of the most urgent features to be added:
 
 - Support all types of images (not just `MultiscaleSpatialImage`)
 - Better user experience (less arguments)
