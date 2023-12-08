@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "spatialdata_xenium_explorer"
-version = "0.0.1"
+version = "0.1.0"
 description = "Converting any SpatialData object into files that can be open by the Xenium Explorer"
 authors = ["Quentin Blampey <quentin.blampey@gmail.com>"]
 packages = [{ include = "spatialdata_xenium_explorer" }]
+
+[tool.poetry.scripts]
+spatialdata_xenium_explorer = "spatialdata_xenium_explorer.main:app"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
