@@ -1,6 +1,6 @@
 ## Installation
 
-`spatialdata_xenium_explorer` can be installed on every OS with `pip` or [`poetry`](https://python-poetry.org/docs/) on `python>=3.7`.
+`spatialdata_xenium_explorer` can be installed on every OS with `pip` or [`poetry`](https://python-poetry.org/docs/) on `python>=3.9`.
 
 !!! note "Advice (optional)"
 

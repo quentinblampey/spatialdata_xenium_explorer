@@ -14,6 +14,8 @@ Converting any [`SpatialData`](https://github.com/scverse/spatialdata) object in
 
 ## Installation
 
+Requirement: `python>=3.9`
+
 ```sh
 pip install spatialdata_xenium_explorer
 ```
