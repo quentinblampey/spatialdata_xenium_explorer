@@ -1,3 +1,4 @@
+import logging
 from math import ceil
 from pathlib import Path
 from typing import Iterable
@@ -6,10 +7,23 @@ import numpy as np
 import zarr
 from shapely.geometry import Polygon
 
-from ._constants import ExplorerConstants, cell_summary_attrs, group_attrs
+from .._constants import ExplorerConstants, FileNames, cell_summary_attrs, group_attrs
+from ..utils import explorer_file_path
+
+log = logging.getLogger(__name__)
 
 
 def pad_polygon(polygon: Polygon, max_vertices: int, tolerance: float = 1) -> np.ndarray:
+    """Transform the polygon to have the desired number of vertices
+
+    Args:
+        polygon: A `shapely` polygon
+        max_vertices: The desired number of vertices
+        tolerance: The step of tolerance used for simplification. At each step, we increase the tolerance of this value until the polygon is simplified enough.
+
+    Returns:
+        A 2D array representing the polygon vertices
+    """
     n_vertices = len(polygon.exterior.coords)
     assert n_vertices >= 3
 
@@ -26,8 +40,20 @@ def pad_polygon(polygon: Polygon, max_vertices: int, tolerance: float = 1) -> np
     return pad_polygon(polygon, max_vertices, tolerance + 1)
 
 
-def write_polygons(path: Path, polygons: Iterable[Polygon], max_vertices: int) -> None:
-    print(f"Writing {len(polygons)} cell polygons")
+def write_polygons(
+    path: Path, polygons: Iterable[Polygon], max_vertices: int, is_dir: bool = True
+) -> None:
+    """Write a `cells.zarr.zip` file containing the cell polygonal boundaries
+
+    Args:
+        path: Path to the Xenium Explorer directory where the transcript file will be written
+        polygons: A list of `shapely` polygons to be written
+        max_vertices: The number of vertices per polygon (they will be transformed to have the right number of vertices)
+        is_dir: If `False`, then `path` is a path to a single file, not to the Xenium Explorer directory.
+    """
+    path = explorer_file_path(path, FileNames.SHAPES, is_dir)
+
+    log.info(f"Writing {len(polygons)} cell polygons")
     coordinates = np.stack([pad_polygon(p, max_vertices) for p in polygons])
     coordinates /= ExplorerConstants.MICRONS_TO_PIXELS
 
@@ -54,7 +80,7 @@ def write_polygons(path: Path, polygons: Iterable[Polygon], max_vertices: int) -
         )
 
         cell_id = np.ones((num_cells, 2))
-        cell_id[:, 0] = np.arange(1, num_cells + 1)
+        cell_id[:, 0] = np.arange(num_cells)
         g.array("cell_id", cell_id, dtype="uint32", chunks=(cells_half, 1))
 
         cell_summary = np.zeros((num_cells, 7))
@@ -76,7 +102,7 @@ def write_polygons(path: Path, polygons: Iterable[Polygon], max_vertices: int) -
 
         g.array(
             "seg_mask_value",
-            np.arange(1, num_cells + 1),
+            np.arange(num_cells),
             dtype="uint32",
             chunks=(cells_half,),
         )

@@ -12,6 +12,9 @@ class ExplorerConstants:
     QUALITY_SCORE = 40
     MICRONS_TO_PIXELS = 4.705882
 
+    COLORS = [400, 500, 550, 600, 650, 700]
+    KNOWN_CHANNELS = {"DAPI": 400}
+
 
 class Versions:
     EXPERIMENT = [2, 0]
@@ -109,15 +112,6 @@ def experiment_dict(run_name: str, region_name: str, num_cells: int) -> dict:
             "analysis_zarr_filepath": "analysis.zarr.zip",
             "analysis_summary_filepath": "analysis_summary.html",
         },
-    }
-
-
-def image_options() -> dict:
-    return {
-        "photometric": "minisblack",
-        "tile": (1024, 1024),
-        "compression": "jpeg2000",
-        "resolutionunit": "CENTIMETER",
     }
 
 

@@ -1,3 +1,4 @@
+import logging
 from math import ceil
 from pathlib import Path
 
@@ -5,7 +6,10 @@ import dask.dataframe as dd
 import numpy as np
 import zarr
 
-from ._constants import ExplorerConstants
+from .._constants import ExplorerConstants, FileNames
+from ..utils import explorer_file_path
+
+log = logging.getLogger(__name__)
 
 
 def subsample_indices(n_samples, factor: int = 4):
@@ -18,9 +22,20 @@ def write_transcripts(
     df: dd.DataFrame,
     gene: str = "gene",
     max_levels: int = 15,
+    is_dir: bool = True,
 ):
+    """Write a `transcripts.zarr.zip` file containing pyramidal transcript locations
+
+    Args:
+        path: Path to the Xenium Explorer directory where the transcript file will be written
+        df: DataFrame representing the transcripts, with `"x"`, `"y"` column required, as well as the `gene` column (see the corresponding argument)
+        gene: Column of `df` containing the genes names.
+        max_levels: Maximum number of levels in the pyramid.
+        is_dir: If `False`, then `path` is a path to a single file, not to the Xenium Explorer directory.
+    """
+    path = explorer_file_path(path, FileNames.POINTS, is_dir)
+
     # TODO: make everything using dask instead of pandas
-    print(f"Writing {len(df)} transcripts")
     df = df.compute()
 
     num_transcripts = len(df)
@@ -29,6 +44,10 @@ def write_transcripts(
     location = df[["x", "y"]]
     location /= ExplorerConstants.MICRONS_TO_PIXELS
     location = np.concatenate([location, np.zeros((num_transcripts, 1))], axis=1)
+
+    if location.min() < 0:
+        log.warn("Some transcripts are located outside of the image (pixels < 0)")
+    log.info(f"Writing {len(df)} transcripts")
 
     xmax, ymax = location[:, :2].max(axis=0)
 
@@ -78,7 +97,7 @@ def write_transcripts(
         grids = g.create_group("grids")
 
         for level in range(max_levels):
-            print(f"   Level {level}: {len(location)} transcripts")
+            log.info(f"   > Level {level}: {len(location)} transcripts")
             level_group = grids.create_group(level)
 
             tile_size = ExplorerConstants.GRID_SIZE * 2**level
