@@ -1,6 +1,6 @@
 ## Installation
 
-`spatialdata_xenium_explorer` can be installed on every OS with `pip` or [`poetry`](https://python-poetry.org/docs/) on `python>=3.10`.
+`spatialdata_xenium_explorer` can be installed on every OS with `pip` or [`poetry`](https://python-poetry.org/docs/) on `python>=3.7`.
 
 !!! note "Advice (optional)"
 
@@ -21,22 +21,22 @@ Choose one of the following, depending on your needs (it should take at most a f
     pip install spatialdata_xenium_explorer
     ```
 
-=== "Local install (pip)"
+=== "Pip in dev mode"
 
     ``` bash
     git clone https://github.com/quentinblampey/spatialdata_xenium_explorer.git
     cd spatialdata_xenium_explorer
 
-    pip install .
+    pip install -e .
     ```
 
-=== "Poetry (dev mode)"
+=== "Poetry in dev mode"
 
     ``` bash
     git clone https://github.com/quentinblampey/spatialdata_xenium_explorer.git
     cd spatialdata_xenium_explorer
 
-    poetry install --all-extras
+    poetry install
     ```
 
 ## Usage
