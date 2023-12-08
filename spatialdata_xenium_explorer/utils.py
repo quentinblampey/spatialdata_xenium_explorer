@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import dask.array as da
@@ -11,6 +12,8 @@ from spatial_image import SpatialImage
 from spatialdata import SpatialData
 from spatialdata.models import SpatialElement
 from spatialdata.transformations import Identity, get_transformation, set_transformation
+
+log = logging.getLogger(__name__)
 
 
 def explorer_file_path(path: str, filename: str, is_dir: bool):
@@ -94,12 +97,11 @@ def get_key(sdata: SpatialData, attr: str, key: str | None = None):
 
     elements = getattr(sdata, attr)
 
-    if not len(elements):
+    if len(elements) != 1:
+        log.warn(
+            f"Trying to get an element key of `sdata.{attr}`, but it contains multiple values and no key was provided. It will not be saved to the xenium explorer."
+        )
         return None
-
-    assert (
-        len(elements) == 1
-    ), f"Trying to get an element key of `sdata.{attr}`, but it contains multiple values and no dict key was provided"
 
     return next(iter(elements.keys()))
 

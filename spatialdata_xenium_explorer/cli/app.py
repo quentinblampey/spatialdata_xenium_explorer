@@ -12,12 +12,24 @@ def write(
         None,
         help="Path to a directory where Xenium Explorer's outputs will be saved. By default, writes to the same path as `sdata_path` but with the `.explorer` suffix",
     ),
-    gene_column: str = typer.Option(
-        None, help="Column name of the points dataframe containing the gene names"
+    image_key: str = typer.Option(
+        None,
+        help="Name of the image of interest (key of `sdata.images`). This argument doesn't need to be provided if there is only one image.",
     ),
     shapes_key: str = typer.Option(
         None,
-        help="Key for the boundaries. By default, uses the baysor boundaires, else the cellpose boundaries",
+        help="Name of the cell shapes (key of `sdata.shapes`). This argument doesn't need to be provided if there is only one shapes key or a table with only one region.",
+    ),
+    points_key: str = typer.Option(
+        None,
+        help="Name of the transcripts (key of `sdata.points`). This argument doesn't need to be provided if there is only one points key.",
+    ),
+    gene_column: str = typer.Option(
+        None, help="Column name of the points dataframe containing the gene names"
+    ),
+    layer: str = typer.Option(
+        None,
+        help="Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.",
     ),
     lazy: bool = typer.Option(
         True,
@@ -30,10 +42,6 @@ def write(
     mode: str = typer.Option(
         None,
         help="string that indicated which files should be created. `'-ib'` means everything except images and boundaries, while `'+tocm'` means only transcripts/observations/counts/metadata (each letter corresponds to one explorer file). By default, keeps everything",
-    ),
-    save_h5ad: bool = typer.Option(
-        True,
-        help="Whether to save the adata as h5ad in the explorer directory (for convenience only, since h5ad is faster to open than the original .zarr table)",
     ),
 ):
     """Convert a spatialdata object to Xenium Explorer's inputs"""
@@ -51,12 +59,14 @@ def write(
     write(
         output_path,
         sdata,
+        image_key=image_key,
         shapes_key=shapes_key,
+        points_key=points_key,
         gene_column=gene_column,
+        layer=layer,
         lazy=lazy,
         ram_threshold_gb=ram_threshold_gb,
         mode=mode,
-        save_h5ad=save_h5ad,
     )
 
 

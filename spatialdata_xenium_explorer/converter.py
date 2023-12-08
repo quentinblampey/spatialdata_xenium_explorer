@@ -74,11 +74,11 @@ def write(
     image_key, image = get_spatial_image(sdata, image_key, return_key=True)
 
     ### Saving cell categories and gene counts
-    if sdata.table is not None and shapes_key is not None:
+    if sdata.table is not None:
         adata = sdata.table
 
         region = adata.uns["spatialdata_attrs"]["region"]
-        region = region if isinstance(region, list) else region
+        region = region if isinstance(region, list) else [region]
 
         if len(region) == 1:
             assert (
