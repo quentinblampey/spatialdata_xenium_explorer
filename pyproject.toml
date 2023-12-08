@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spatialdata_xenium_explorer"
-version = "0.1.2"
+version = "0.1.3"
 description = "Converting any SpatialData object into files that can be open by the Xenium Explorer"
 documentation = "https://quentinblampey.github.io/spatialdata_xenium_explorer/"
 homepage = "https://quentinblampey.github.io/spatialdata_xenium_explorer/"
