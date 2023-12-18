@@ -135,32 +135,34 @@ def _default_image_models_kwargs(image_models_kwargs: dict | None):
     return image_models_kwargs
 
 
-def _is_color_valid(channel_name: str) -> bool:
-    """The color is valid if it contains a wavelength (e.g., `550`) or is known by the Xenium Explorer"""
-    known_colors = set(ExplorerConstants.KNOWN_CHANNELS.keys())
-    contains_wavelength = bool(re.search(r"(?<![0-9])[0-9]{3}(?![0-9])", channel_name))
-    return contains_wavelength or channel_name in known_colors
+def _to_color(channel_name: str, is_wavelength: bool, colors_iterator: list):
+    if is_wavelength:
+        return channel_name
+    if channel_name in ExplorerConstants.KNOWN_CHANNELS:
+        return f"{channel_name} (color={ExplorerConstants.KNOWN_CHANNELS[channel_name]})"
+    return f"{channel_name} (color={colors_iterator.pop()})"
 
 
 def _set_colors(channel_names: list[str]) -> list[str]:
     """
     Trick to provide a color to all channels on the Xenium Explorer.
 
-    Some colors are automatically colored by the Xenium explorer (e.g., DAPI is colored in blue).
     But some channels colors are set to white by default. This functions allows to color these
     channels with an available wavelength color (e.g., `550`).
     """
-    colors_valid = [_is_color_valid(name) for name in channel_names]
-
-    already_assigned_colors = {ExplorerConstants.KNOWN_CHANNELS.get(name) for name in channel_names}
-    available_colors = sorted(list(set(ExplorerConstants.COLORS) - already_assigned_colors))
-
-    n_invalid = len(colors_valid) - sum(colors_valid)
-    color_indices = list(np.linspace(0, len(available_colors) - 1, n_invalid).round().astype(int))
+    existing_wavelength = [
+        bool(re.search(r"(?<![0-9])[0-9]{3}(?![0-9])", c)) for c in channel_names
+    ]
+    valid_colors = [c for c in ExplorerConstants.COLORS if c != ExplorerConstants.NUCLEUS_COLOR]
+    n_missing = sum(
+        not is_wavelength and not c in ExplorerConstants.KNOWN_CHANNELS
+        for c, is_wavelength in zip(channel_names, existing_wavelength)
+    )
+    colors_iterator: list = np.repeat(valid_colors, ceil(n_missing / len(valid_colors))).tolist()
 
     return [
-        name if is_valid else f"{name} (color={available_colors[color_indices.pop()]})"
-        for name, is_valid in zip(channel_names, colors_valid)
+        _to_color(c, is_wavelength, colors_iterator)
+        for c, is_wavelength in zip(channel_names, existing_wavelength)
     ]
 
 
@@ -240,41 +242,44 @@ def align(
     sdata.add_image(image.name, image, overwrite=overwrite)
 
 
-def _get_channel_names_xenium_if(element, names):
-    for child in element:
-        _get_channel_names_xenium_if(child, names)
-    if element.attrib:
-        if "Name" in element.attrib:
-            names.append(element.attrib["Name"])
-    return names
-
-
-def xenium_if(path: Path) -> SpatialImage:
-    """Read the IF image associated to Xenium data
-
-    Args:
-        path: Path to the `.ime.tif` IF image
-
-    Returns:
-        A `SpatialImage` representing the Xenium IF image
-    """
-    image_models_kwargs = _default_image_models_kwargs(None)
-
-    image: da.Array = imread(path)
-    image = image.rechunk(chunks=image_models_kwargs["chunks"])
-
-    image_name = Path(path).absolute().name.split(".")[0]
-
+def _ome_channels_names(path: str):
     import xml.etree.ElementTree as ET
 
-    with tf.TiffFile(path) as tif:
-        page_series = tif.series[0]
-        desc = page_series[0].description
-        root = ET.fromstring(desc)
-        names = _get_channel_names_xenium_if(root, [])
+    tiff = tf.TiffFile(path)
+    omexml_string = tiff.pages[0].description
 
-    if len(names) != len(image):
-        names = [str(i) for i in range(len(image))]
-        log.warn(f"Channel names couldn't be read. Using {names} instead.")
+    root = ET.fromstring(omexml_string)
+    namespaces = {"ome": "http://www.openmicroscopy.org/Schemas/OME/2016-06"}
+    channels = root.findall("ome:Image[1]/ome:Pixels/ome:Channel", namespaces)
+    return [c.attrib["Name"] if "Name" in c.attrib else c.attrib["ID"] for c in channels]
 
-    return SpatialImage(image, dims=["c", "y", "x"], name=image_name, coords={"c": names})
+
+def ome_tif(path: Path) -> SpatialImage:
+    """Read an `.ome.tif` image. This image should be a 2D image (with possibly multiple channels).
+    Typically, this function can be used to open Xenium IF images.
+
+    Args:
+        path: Path to the `.ome.tif` image
+
+    Returns:
+        A `SpatialImage`
+    """
+    image_models_kwargs = _default_image_models_kwargs(None)
+    image_name = Path(path).absolute().name.split(".")[0]
+    image: da.Array = imread(path)
+
+    if image.ndim == 4:
+        assert image.shape[0] == 1, f"4D images not supported"
+        image = da.moveaxis(image[0], 2, 0)
+        log.info(f"Transformed 4D image into a 3D image of shape (c, y, x) = {image.shape}")
+    elif image.ndim != 3:
+        raise ValueError(f"Number of dimensions not supported: {image.ndim}")
+
+    image = image.rechunk(chunks=image_models_kwargs["chunks"])
+
+    channel_names = _ome_channels_names(path)
+    if len(channel_names) != len(image):
+        channel_names = [str(i) for i in range(len(image))]
+        log.warn(f"Channel names couldn't be read. Using {channel_names} instead.")
+
+    return SpatialImage(image, dims=["c", "y", "x"], name=image_name, coords={"c": channel_names})

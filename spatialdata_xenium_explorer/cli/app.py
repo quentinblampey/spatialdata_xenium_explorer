@@ -119,10 +119,10 @@ def add_aligned(
     import spatialdata
 
     from spatialdata_xenium_explorer import align
-    from spatialdata_xenium_explorer.core.images import xenium_if
+    from spatialdata_xenium_explorer.core.images import ome_tif
 
     sdata = spatialdata.read_zarr(sdata_path)
-    image = xenium_if(image_path)
+    image = ome_tif(image_path)
 
     align(
         sdata, image, transformation_matrix_path, overwrite=overwrite, image_key=original_image_key
