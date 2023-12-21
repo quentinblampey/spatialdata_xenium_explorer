@@ -12,6 +12,8 @@ Converting any [`SpatialData`](https://github.com/scverse/spatialdata) object in
 
 > *Xenium Explorer* is a registered trademark of 10x Genomics
 
+You may also be interested in a pipeline for spatial-omics that uses this conversion to Xenium Explorer: see [Sopa](https://github.com/gustaveroussy/sopa).
+
 ## Installation
 
 Requirement: `python>=3.9`
