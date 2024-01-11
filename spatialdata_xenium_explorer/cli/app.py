@@ -111,7 +111,7 @@ def add_aligned(
     ),
     original_image_key: str = typer.Option(
         None,
-        help="Optional original-image key on which the new image will be aligned. This doesn't need to be provided if there is only one image",
+        help="Optional original-image key (of sdata.images) on which the new image will be aligned. This doesn't need to be provided if there is only one image",
     ),
     overwrite: bool = typer.Option(False, help="Whether to overwrite the image if existing"),
 ):

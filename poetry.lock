@@ -921,14 +921,14 @@ files = [
 
 [[package]]
 name = "fsspec"
-version = "2023.12.1"
+version = "2023.6.0"
 description = "File-system specification"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fsspec-2023.12.1-py3-none-any.whl", hash = "sha256:6271f1d3075a378bfe432f6f42bf7e1d2a6ba74f78dd9b512385474c579146a0"},
-    {file = "fsspec-2023.12.1.tar.gz", hash = "sha256:c4da01a35ac65c853f833e43f67802c25213f560820d54ddf248f92eddd5e990"},
+    {file = "fsspec-2023.6.0-py3-none-any.whl", hash = "sha256:1cbad1faef3e391fba6dc005ae9b5bdcbf43005c9167ce78c915549c352c869a"},
+    {file = "fsspec-2023.6.0.tar.gz", hash = "sha256:d0b2f935446169753e7a5c5c55681c54ea91996cc67be93c39a154fb3a2742af"},
 ]
 
 [package.dependencies]
@@ -1822,14 +1822,14 @@ files = [
 
 [[package]]
 name = "multiscale-spatial-image"
-version = "1.0.0"
+version = "0.11.2"
 description = "Generate a multiscale, chunked, multi-dimensional spatial image data structure that can be serialized to OME-NGFF."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "multiscale_spatial_image-1.0.0-py3-none-any.whl", hash = "sha256:2b1bac6aa12f493ffaa97e6b4395228211b4188f055d18786a82b8db78e00176"},
-    {file = "multiscale_spatial_image-1.0.0.tar.gz", hash = "sha256:0b3a5aae1cabc5bb6b742b9ee583b82fcf4219479725abca5ff0a4e3e5536c06"},
+    {file = "multiscale_spatial_image-0.11.2-py3-none-any.whl", hash = "sha256:a02f542a2f535c4229b64f4624a31d2b5ae9a098401da7743bb95e6a8759d23d"},
+    {file = "multiscale_spatial_image-0.11.2.tar.gz", hash = "sha256:07db47c3358bdfad9688a5ee8064a219ec72a43deb65e30bd4e591adfe35d10f"},
 ]
 
 [package.dependencies]
@@ -3221,14 +3221,14 @@ files = [
 
 [[package]]
 name = "spatial-image"
-version = "1.0.0"
+version = "0.3.0"
 description = "spatial-image"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "spatial_image-1.0.0-py3-none-any.whl", hash = "sha256:08efa442b5b8f46bffa6cad4ff046c77e375021655686904c33fd1065b2dfb30"},
-    {file = "spatial_image-1.0.0.tar.gz", hash = "sha256:55373e54a5e4c8de8e2cf3039f2caa4efb23fad1ac1137f279172fb31f979e2e"},
+    {file = "spatial_image-0.3.0-py3-none-any.whl", hash = "sha256:aa4bd9a6c538146c00ac7f27fa05cad1070174df8522f88db10e680622dd8211"},
+    {file = "spatial_image-0.3.0.tar.gz", hash = "sha256:508ed434d1cdba5147c1dd358aea0ea41a0f913b02a73e0fd36fcbdbee14b40d"},
 ]
 
 [package.dependencies]
@@ -3241,21 +3241,22 @@ test = ["pytest", "pytest-mypy"]
 
 [[package]]
 name = "spatialdata"
-version = "0.0.12"
+version = "0.0.15"
 description = "Spatial data format."
 category = "main"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "spatialdata-0.0.12-py3-none-any.whl", hash = "sha256:d0e1237d8de7c03ceb491ac283c41d1debef9150ced75bbdb57134a55fcb6156"},
-    {file = "spatialdata-0.0.12.tar.gz", hash = "sha256:6e3f1710922e0ba768f5f2dc6c4ed6ad960cecdf2f9c2f3b070fcbd22e1ece9e"},
+    {file = "spatialdata-0.0.15-py3-none-any.whl", hash = "sha256:4660d77694018bf772ddc26845aae797fde5b07ef8bebd2fdf9063f560a6232a"},
+    {file = "spatialdata-0.0.15.tar.gz", hash = "sha256:7372b13b9fa84c0eadcbfca2f2cd354a9ae8dd370401745d55d572864eb4dc75"},
 ]
 
 [package.dependencies]
 anndata = ">=0.9.1"
 dask-image = "*"
+fsspec = "<=2023.6"
 geopandas = "*"
-multiscale-spatial-image = ">=0.11.2"
+multiscale-spatial-image = "0.11.2"
 networkx = "*"
 numpy = "*"
 ome-zarr = ">=0.7.0"
@@ -3263,9 +3264,9 @@ pyarrow = "*"
 pygeos = "*"
 rich = "*"
 shapely = ">=2.0.1"
-spatial-image = ">=0.3.0"
+spatial-image = "0.3.0"
 tqdm = "*"
-typing-extensions = ">=4.0.0,<4.6.0"
+typing-extensions = ">=4.8.0"
 xarray = "*"
 xarray-schema = "*"
 xarray-spatial = ">=0.3.5"
@@ -3434,14 +3435,14 @@ test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.
 
 [[package]]
 name = "typing-extensions"
-version = "4.5.0"
-description = "Backported and Experimental Type Hints for Python 3.7+"
+version = "4.9.0"
+description = "Backported and Experimental Type Hints for Python 3.8+"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.5.0-py3-none-any.whl", hash = "sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4"},
-    {file = "typing_extensions-4.5.0.tar.gz", hash = "sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb"},
+    {file = "typing_extensions-4.9.0-py3-none-any.whl", hash = "sha256:af72aea155e91adfc61c3ae9e0e342dbc0cba726d6cba4b6c72c1f34e47291cd"},
+    {file = "typing_extensions-4.9.0.tar.gz", hash = "sha256:23478f88c37f27d76ac8aee6c905017a143b0b1b886c3c9f66bc2fd94f9f5783"},
 ]
 
 [[package]]
@@ -3796,4 +3797,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "7dc32e2368627ad477e45a85e25569a0051d42d623a80b3dc4c5824cbd57485e"
+content-hash = "f16cf11339325b22a0ca0fb7fbd5d2cceb88fff9644cc56bae9cff82e08be16e"

@@ -22,6 +22,13 @@ Requirement: `python>=3.9`
 pip install spatialdata_xenium_explorer
 ```
 
+## Features
+
+- Conversion of the following data: images, cell boundaries (polygons), transcripts, cell-by-gene table, and cell categories (or observations).
+- Image alignment can be made on the Xenium Explorer, and then the `SpatialData` object can be updated
+- When working on the `SpatialData` or `AnnData` object, new cell categories can be easily and quickly added to the Explorer
+- When selecting cells with the "lasso tool" on the Explorer, it's easy to select back these cells on the `SpatialData` or `AnnData` object
+
 ## Usage
 
 You can use our CLI or API, see examples below. It will create up to 6 files, among which a file called `experiment.xenium`. Double-click on this file to open it on the [Xenium Explorer](https://www.10xgenomics.com/support/software/xenium-explorer/downloads) (make sure you have the latest version of the software).

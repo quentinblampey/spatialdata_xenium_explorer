@@ -1,13 +1,15 @@
 site_name: spatialdata_xenium_explorer
 repo_name: spatialdata_xenium_explorer
+repo_url: https://github.com/quentinblampey/spatialdata_xenium_explorer
 copyright: Copyright &copy; 2023 - 2024 Quentin Blampey
 theme:
   name: material
 nav:
   - Home: index.md
-  - Getting Started: getting_started.md
-  - CLI: cli.md
-  - API: api.md
+  - Getting Started: getting_started
+  - CLI: cli
+  - API: api
+  - Cite us: cite_us
 plugins:
   - search
   - mkdocstrings
