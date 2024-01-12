@@ -27,6 +27,10 @@ def write(
     gene_column: str = typer.Option(
         None, help="Column name of the points dataframe containing the gene names"
     ),
+    pixelsize: float = typer.Option(
+        0.2125,
+        help="Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.",
+    ),
     layer: str = typer.Option(
         None,
         help="Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.",
@@ -63,6 +67,7 @@ def write(
         shapes_key=shapes_key,
         points_key=points_key,
         gene_column=gene_column,
+        pixelsize=pixelsize,
         layer=layer,
         lazy=lazy,
         ram_threshold_gb=ram_threshold_gb,

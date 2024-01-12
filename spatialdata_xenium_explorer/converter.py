@@ -27,6 +27,7 @@ def write(
     shapes_key: str | None = None,
     points_key: str | None = None,
     gene_column: str | None = None,
+    pixelsize: float = 0.2125,
     layer: str | None = None,
     polygon_max_vertices: int = 13,
     lazy: bool = True,
@@ -62,6 +63,7 @@ def write(
         shapes_key: Name of the cell shapes (key of `sdata.shapes`). This argument doesn't need to be provided if there is only one shapes key or a table with only one region.
         points_key: Name of the transcripts (key of `sdata.points`). This argument doesn't need to be provided if there is only one points key.
         gene_column: Column name of the points dataframe containing the gene names.
+        pixelsize: Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.
         layer: Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.
         polygon_max_vertices: Maximum number of vertices for the cell polygons. A higher value will display smoother cells.
         lazy: If `True`, will not load the full images in memory (except if the image memory is below `ram_threshold_gb`).
@@ -100,7 +102,7 @@ def write(
         if sdata.table is not None:
             geo_df = geo_df.loc[adata.obs[adata.uns["spatialdata_attrs"]["instance_key"]]]
 
-        write_polygons(path, geo_df.geometry, polygon_max_vertices)
+        write_polygons(path, geo_df.geometry, polygon_max_vertices, pixelsize=pixelsize)
 
     ### Saving transcripts
     df = get_element(sdata, "points", points_key)
@@ -108,17 +110,17 @@ def write(
     if _should_save(mode, "t") and df is not None:
         if gene_column is not None:
             df = to_intrinsic(sdata, df, image_key)
-            write_transcripts(path, df, gene_column)
+            write_transcripts(path, df, gene_column, pixelsize=pixelsize)
         else:
             log.warn("The argument 'gene_column' has to be provided to save the transcripts")
 
     ### Saving image
     if _should_save(mode, "i"):
-        write_image(path, image, lazy=lazy, ram_threshold_gb=ram_threshold_gb)
+        write_image(path, image, lazy=lazy, ram_threshold_gb=ram_threshold_gb, pixelsize=pixelsize)
 
     ### Saving experiment.xenium file
     if _should_save(mode, "m"):
-        write_metadata(path, image_key, shapes_key, _get_n_obs(sdata, geo_df))
+        write_metadata(path, image_key, shapes_key, _get_n_obs(sdata, geo_df), pixelsize)
 
     log.info(f"Saved files in the following directory: {path}")
     log.info(f"You can open the experiment with 'open {path / FileNames.METADATA}'")
@@ -150,7 +152,12 @@ def _get_n_obs(sdata: SpatialData, geo_df: gpd.GeoDataFrame) -> int:
 
 
 def write_metadata(
-    path: str, image_key: str = "NA", shapes_key: str = "NA", n_obs: int = 0, is_dir: bool = True
+    path: str,
+    image_key: str = "NA",
+    shapes_key: str = "NA",
+    n_obs: int = 0,
+    is_dir: bool = True,
+    pixelsize: float = 0.2125,
 ):
     """Create an `experiment.xenium` file that can be open by the Xenium Explorer.
 
@@ -163,9 +170,10 @@ def write_metadata(
         shapes_key: Key of `SpatialData` object containing the boundaries shown on the explorer.
         n_obs: Number of cells
         is_dir: If `False`, then `path` is a path to a single file, not to the Xenium Explorer directory.
+        pixelsize: Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.
     """
     path = explorer_file_path(path, FileNames.METADATA, is_dir)
 
     with open(path, "w") as f:
-        metadata = experiment_dict(image_key, shapes_key, n_obs)
+        metadata = experiment_dict(image_key, shapes_key, n_obs, pixelsize)
         json.dump(metadata, f, indent=4)
