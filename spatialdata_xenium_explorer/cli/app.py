@@ -31,6 +31,7 @@ def write(
         0.2125,
         help="Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.",
     ),
+    spot: bool = typer.Option(False, help="Whether the technology is based on spots"),
     layer: str = typer.Option(
         None,
         help="Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.",
@@ -68,6 +69,7 @@ def write(
         points_key=points_key,
         gene_column=gene_column,
         pixelsize=pixelsize,
+        spot=spot,
         layer=layer,
         lazy=lazy,
         ram_threshold_gb=ram_threshold_gb,
