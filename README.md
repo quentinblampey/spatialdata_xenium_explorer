@@ -10,11 +10,12 @@
 
 Converting any [`SpatialData`](https://github.com/scverse/spatialdata) object into files that can be opened by the [Xenium Explorer](https://www.10xgenomics.com/support/software/xenium-explorer).
 
-> *Xenium Explorer* is a registered trademark of 10x Genomics
-
-You may also be interested in a pipeline for spatial-omics that uses this conversion to Xenium Explorer: see [Sopa](https://github.com/gustaveroussy/sopa).
 
 Check [the documentation](https://quentinblampey.github.io/spatialdata_xenium_explorer/) to get started quickly.
+
+> *Xenium Explorer* is a registered trademark of 10x Genomics
+
+> You may also be interested in a pipeline for spatial-omics that uses this conversion to Xenium Explorer: see [Sopa](https://github.com/gustaveroussy/sopa).
 
 ## Installation
 
