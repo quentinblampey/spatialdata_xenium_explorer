@@ -112,7 +112,7 @@ def write_transcripts(
             GRIDS_ATTRS["grid_number_objects"].append([])
             GRIDS_ATTRS["grid_keys"].append([])
 
-            n_tiles_x, n_tiles_y = ceil(xmax / tile_size), ceil(ymax / tile_size)
+            n_tiles_x, n_tiles_y = max(1, ceil(xmax / tile_size)), max(1, ceil(ymax / tile_size))
 
             for tx in range(n_tiles_x):
                 for ty in range(n_tiles_y):
@@ -179,7 +179,7 @@ def write_transcripts(
                         chunks=chunks,
                     )
 
-            if n_tiles_x * n_tiles_y == 1:
+            if n_tiles_x * n_tiles_y == 1 and level > 0:
                 GRIDS_ATTRS["number_levels"] = level + 1
                 break
 

@@ -24,6 +24,11 @@ class Versions:
     CELL_CATEGORIES = [1, 0]
 
 
+class ShapesConstants:
+    RADIUS = "radius"
+    DEFAULT_POINT_RADIUS = 100
+
+
 def cell_categories_attrs() -> dict:
     return {
         "major_version": Versions.CELL_CATEGORIES[0],

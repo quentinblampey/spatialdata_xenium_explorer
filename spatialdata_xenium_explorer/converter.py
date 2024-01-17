@@ -8,6 +8,7 @@ import geopandas as gpd
 from spatialdata import SpatialData
 
 from . import (
+    utils,
     write_cell_categories,
     write_gene_counts,
     write_image,
@@ -15,7 +16,6 @@ from . import (
     write_transcripts,
 )
 from ._constants import FileNames, experiment_dict
-from .utils import explorer_file_path, get_element, get_spatial_image, to_intrinsic
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +28,7 @@ def write(
     points_key: str | None = None,
     gene_column: str | None = None,
     pixelsize: float = 0.2125,
+    spot: bool = False,
     layer: str | None = None,
     polygon_max_vertices: int = 13,
     lazy: bool = True,
@@ -64,6 +65,7 @@ def write(
         points_key: Name of the transcripts (key of `sdata.points`). This argument doesn't need to be provided if there is only one points key.
         gene_column: Column name of the points dataframe containing the gene names.
         pixelsize: Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.
+        spot: Whether the technology is based on spots
         layer: Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.
         polygon_max_vertices: Maximum number of vertices for the cell polygons. A higher value will display smoother cells.
         lazy: If `True`, will not load the full images in memory (except if the image memory is below `ram_threshold_gb`).
@@ -73,7 +75,7 @@ def write(
     path: Path = Path(path)
     _check_explorer_directory(path)
 
-    image_key, image = get_spatial_image(sdata, image_key, return_key=True)
+    image_key, image = utils.get_spatial_image(sdata, image_key, return_key=True)
 
     ### Saving cell categories and gene counts
     if sdata.table is not None:
@@ -94,22 +96,27 @@ def write(
             write_cell_categories(path, adata)
 
     ### Saving cell boundaries
-    shapes_key, geo_df = get_element(sdata, "shapes", shapes_key, return_key=True)
+    shapes_key, geo_df = utils.get_element(sdata, "shapes", shapes_key, return_key=True)
 
     if _should_save(mode, "b") and geo_df is not None:
-        geo_df = to_intrinsic(sdata, geo_df, image_key)
+        geo_df = utils.to_intrinsic(sdata, geo_df, image_key)
 
         if sdata.table is not None:
             geo_df = geo_df.loc[adata.obs[adata.uns["spatialdata_attrs"]["instance_key"]]]
 
+        geo_df = utils._standardize_shapes(geo_df)
+
         write_polygons(path, geo_df.geometry, polygon_max_vertices, pixelsize=pixelsize)
 
     ### Saving transcripts
-    df = get_element(sdata, "points", points_key)
+    if spot and sdata.table is not None:
+        df, gene_column = utils._spot_transcripts_origin(adata)
+    else:
+        df = utils.get_element(sdata, "points", points_key)
+        df = utils.to_intrinsic(sdata, df, image_key)
 
     if _should_save(mode, "t") and df is not None:
         if gene_column is not None:
-            df = to_intrinsic(sdata, df, image_key)
             write_transcripts(path, df, gene_column, pixelsize=pixelsize)
         else:
             log.warn("The argument 'gene_column' has to be provided to save the transcripts")
@@ -172,7 +179,7 @@ def write_metadata(
         is_dir: If `False`, then `path` is a path to a single file, not to the Xenium Explorer directory.
         pixelsize: Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.
     """
-    path = explorer_file_path(path, FileNames.METADATA, is_dir)
+    path = utils.explorer_file_path(path, FileNames.METADATA, is_dir)
 
     with open(path, "w") as f:
         metadata = experiment_dict(image_key, shapes_key, n_obs, pixelsize)

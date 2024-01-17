@@ -4,14 +4,21 @@ import logging
 from pathlib import Path
 
 import dask.array as da
+import dask.dataframe as dd
 import dask_image.ndinterp
+import geopandas as gpd
 import numpy as np
+import pandas as pd
 import xarray as xr
+from anndata import AnnData
 from multiscale_spatial_image import MultiscaleSpatialImage
+from shapely.geometry import MultiPolygon, Point, Polygon
 from spatial_image import SpatialImage
 from spatialdata import SpatialData
 from spatialdata.models import SpatialElement
 from spatialdata.transformations import Identity, get_transformation, set_transformation
+
+from ._constants import ShapesConstants
 
 log = logging.getLogger(__name__)
 
@@ -213,3 +220,41 @@ def scale_dtype(arr: np.ndarray, dtype: np.dtype) -> np.ndarray:
 
     factor = np.iinfo(dtype).max / np.iinfo(arr.dtype).max
     return (arr * factor).astype(dtype)
+
+
+def _standardize_shapes(geo_df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    if geo_df.geometry.map(lambda geom: isinstance(geom, Polygon)).all():
+        return geo_df
+
+    if geo_df.geometry.map(lambda geom: isinstance(geom, Point)).all():
+        if not ShapesConstants.RADIUS in geo_df:
+            log.warn(
+                f"GeoDataFrame contains only Point objects, but no column '{ShapesConstants.RADIUS}' was found. Using default {ShapesConstants.RADIUS}={ShapesConstants.DEFAULT_POINT_RADIUS}"
+            )
+            geo_df[ShapesConstants.RADIUS] = ShapesConstants.DEFAULT_POINT_RADIUS
+
+        geo_df.geometry = geo_df.apply(lambda row: row.geometry.buffer(row.radius), axis=1)
+        return geo_df
+
+    if geo_df.geometry.map(lambda geom: isinstance(geom, MultiPolygon)).all():
+        log.warn(
+            "GeoDataFrame contains only MultiPolygon objects. For each MultiPolygon, only the Polygon with the largest area will be shown"
+        )
+
+        geo_df.geometry = geo_df.geometry.map(
+            lambda multi_polygon: max(multi_polygon.geoms, key=lambda geom: geom.area)
+        )
+        return geo_df
+
+    raise ValueError(
+        "The provided shapes contain unsupported types, or contain a mix of multiple types. Supported types: Polygon, Point, MultiPolygon."
+    )
+
+
+def _spot_transcripts_origin(adata: AnnData) -> tuple[dd.DataFrame, str]:
+    gene_column = "gene"
+    df = pd.DataFrame(
+        {"x": [0] * adata.n_vars, "y": [0] * adata.n_vars, gene_column: adata.var_names}
+    )
+    df = dd.from_pandas(df, chunksize=10_000)
+    return df, gene_column
