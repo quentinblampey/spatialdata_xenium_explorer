@@ -15,7 +15,7 @@ Check [the documentation](https://quentinblampey.github.io/spatialdata_xenium_ex
 
 > *Xenium Explorer* is a registered trademark of 10x Genomics
 
-> You may also be interested in a pipeline for spatial-omics that uses this conversion to Xenium Explorer: see [Sopa](https://github.com/gustaveroussy/sopa).
+> You may also be interested in a pipeline for spatial-omics that uses this package: see [Sopa](https://github.com/gustaveroussy/sopa).
 
 ## Installation
 
