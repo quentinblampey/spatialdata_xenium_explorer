@@ -3,6 +3,10 @@
 
 # Misc
 *ignore**
+visium_data_directory
+xenium_data_directory
+*.explorer
+*.zip
 
 # IDE related
 .vscode/*
@@ -27,6 +31,7 @@ data/*
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb
+!docs/10x_tutorials/*.ipynb
 
 # Misc
 logs/
