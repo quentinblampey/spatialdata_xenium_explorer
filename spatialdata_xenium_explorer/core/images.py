@@ -219,6 +219,7 @@ def align(
         image_models_kwargs: Kwargs to the `Image2DModel` model.
         overwrite: Whether to overwrite the image, if already existing.
     """
+    image_name = image.name
     image_models_kwargs = _default_image_models_kwargs(image_models_kwargs)
 
     to_pixel = Affine(
@@ -239,7 +240,7 @@ def align(
     )
 
     log.info(f"Adding image {image.name}:\n{image}")
-    sdata.add_image(image.name, image, overwrite=overwrite)
+    sdata.add_image(image_name, image, overwrite=overwrite)
 
 
 def _ome_channels_names(path: str):
