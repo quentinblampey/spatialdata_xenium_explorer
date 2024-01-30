@@ -4,6 +4,9 @@
 - Support spot-based technologies like Visium
 - Faster table conversion (using native CSR matrix arguments)
 
+### Fix
+- Keep right image name during image alignment
+
 ## [0.1.4] - 2024-01-11
 
 ### Fix
