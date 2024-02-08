@@ -106,7 +106,7 @@ $ spatialdata_xenium_explorer write [OPTIONS] SDATA_PATH
 * `--shapes-key TEXT`: Name of the cell shapes (key of `sdata.shapes`). This argument doesn't need to be provided if there is only one shapes key or a table with only one region.
 * `--points-key TEXT`: Name of the transcripts (key of `sdata.points`). This argument doesn't need to be provided if there is only one points key.
 * `--gene-column TEXT`: Column name of the points dataframe containing the gene names
-* `--pixelsize FLOAT`: Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.  [default: 0.2125]
+* `--pixel_size FLOAT`: Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.  [default: 0.2125]
 * `--spot / --no-spot`: Whether the technology is based on spots  [default: no-spot]
 * `--layer TEXT`: Layer of `sdata.table` where the gene counts are saved. If `None`, uses `sdata.table.X`.
 * `--lazy / --no-lazy`: If `True`, will not load the full images in memory (except if the image memory is below `ram_threshold_gb`)  [default: lazy]

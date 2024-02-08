@@ -27,7 +27,7 @@ def write(
     gene_column: str = typer.Option(
         None, help="Column name of the points dataframe containing the gene names"
     ),
-    pixelsize: float = typer.Option(
+    pixel_size: float = typer.Option(
         0.2125,
         help="Number of microns in a pixel. Invalid value can lead to inconsistent scales in the Explorer.",
     ),
@@ -68,7 +68,7 @@ def write(
         shapes_key=shapes_key,
         points_key=points_key,
         gene_column=gene_column,
-        pixelsize=pixelsize,
+        pixel_size=pixel_size,
         spot=spot,
         layer=layer,
         lazy=lazy,

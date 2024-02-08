@@ -1,4 +1,7 @@
-## [0.1.x] - tbd
+## [0.1.6] - tbd
+
+### Breaking changes
+- `pixelsize` is now renamed `pixel_size`
 
 ## [0.1.5] - 2024-01-30
 
