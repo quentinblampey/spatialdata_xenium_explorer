@@ -32,7 +32,7 @@ data/*
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb
-!docs/10x_tutorials/*.ipynb
+!docs/10x_tutorials/*/*.ipynb
 
 # Misc
 logs/
