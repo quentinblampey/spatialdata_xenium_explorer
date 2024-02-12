@@ -70,7 +70,7 @@ class MultiscaleImageWriter:
         return size <= self.ram_threshold_gb * 1024**3
 
     def _scale(self, array: np.ndarray):
-        return utils.scale_dtype(array, self.dtype).clip(0, np.iinfo(np.int8).max)
+        return utils.scale_dtype(array, self.dtype)
 
     def _write_image_level(self, tif: tf.TiffWriter, scale_index: int, **kwargs):
         xarr: xr.DataArray = next(iter(self.image[self.scale_names[scale_index]].values()))
