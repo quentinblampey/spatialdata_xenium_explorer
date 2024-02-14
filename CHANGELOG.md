@@ -1,7 +1,10 @@
-## [0.1.6] - tbd
+## [0.1.6] - 2024-02-14
 
 ### Breaking changes
 - `pixelsize` is now renamed `pixel_size`
+
+### Changed
+- Explorer images should have a higher contrast (not clipping values anymore)
 
 ## [0.1.5] - 2024-01-30
 
