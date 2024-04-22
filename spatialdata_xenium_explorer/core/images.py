@@ -240,7 +240,7 @@ def align(
     )
 
     log.info(f"Adding image {image.name}:\n{image}")
-    sdata.add_image(image_name, image, overwrite=overwrite)
+    sdata.images[image_name] = image
 
 
 def _ome_channels_names(path: str):

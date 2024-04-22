@@ -1,3 +1,7 @@
+## [0.1.7] - 2024-04-22
+
+Hotfix: support newer versions of SpatialData (#6)
+
 ## [0.1.6] - 2024-02-14
 
 ### Breaking changes
