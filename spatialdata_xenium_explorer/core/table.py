@@ -17,12 +17,12 @@ log = logging.getLogger(__name__)
 def write_gene_counts(
     path: str, adata: AnnData, layer: str | None = None, is_dir: bool = True
 ) -> None:
-    """Write a `cell_feature_matrix.zarr.zip` file containing the cell-by-gene transcript counts (i.e., from `adata.X`)
+    """Write a `cell_feature_matrix.zarr.zip` file containing the cell-by-gene transcript counts (i.e., from `adata.X`).
 
     Args:
         path: Path to the Xenium Explorer directory where the cell-by-gene file will be written
-        adata: An `AnnData` object. Note that `adata.X` has to be a sparse matrix (and contain the raw counts), else use the `layer` argument.
-        layer: If not `None`, `adata.layers[layer]` should be sparse (and contain the raw counts).
+        adata: An `AnnData` object. Note that `adata.X` must contain raw counts.
+        layer: If not `None`, `adata.layers[layer]` will be used instead of `adata.X`. This must contain raw counts.
         is_dir: If `False`, then `path` is a path to a single file, not to the Xenium Explorer directory.
     """
     path = explorer_file_path(path, FileNames.TABLE, is_dir)

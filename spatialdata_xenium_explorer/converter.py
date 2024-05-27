@@ -186,3 +186,32 @@ def write_metadata(
     with open(path, "w") as f:
         metadata = experiment_dict(image_key, shapes_key, n_obs, pixel_size)
         json.dump(metadata, f, indent=4)
+
+
+def update_metadata(
+    path: str,
+    sdata: SpatialData,
+    table_name: str | None = None,
+    is_dir: bool = True,
+):
+    """Update an `experiment.xenium` file that can be open by the Xenium Explorer.
+
+    Args:
+        path: Path to the Xenium Explorer directory where the metadata file will be written
+        sdata: A `SpatialData` object.
+        table_name: Optional name of the table containing the cells to be visualized.
+        is_dir: If `False`, then `path` is a path to a single file, not to the Xenium Explorer directory.
+    """
+    path = utils.explorer_file_path(path, FileNames.METADATA, is_dir)
+
+    table_name = "table" if table_name is None else table_name
+    adata = sdata.tables[table_name]
+    assert adata is not None
+
+    with open(path, "r") as f:
+        data = json.load(f)
+
+    data["num_cells"] = adata.n_obs
+
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)

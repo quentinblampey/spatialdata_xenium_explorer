@@ -62,6 +62,10 @@ def write_polygons(
     """
     path = explorer_file_path(path, FileNames.SHAPES, is_dir)
 
+    assert all(
+        isinstance(p, Polygon) for p in polygons
+    ), f"All geometries must be a shapely Polygon"
+
     log.info(f"Writing {len(polygons)} cell polygons")
     coordinates = np.stack([pad_polygon(p, max_vertices) for p in polygons])
     coordinates *= pixel_size
