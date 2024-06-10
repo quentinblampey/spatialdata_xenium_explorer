@@ -15,8 +15,6 @@ Check [the documentation](https://quentinblampey.github.io/spatialdata_xenium_ex
 
 > *Xenium Explorer* is a registered trademark of 10x Genomics. The Xenium Explorer is licensed for usage on Xenium data.
 
-> You may also be interested in a pipeline for spatial-omics that uses this package: see [Sopa](https://github.com/gustaveroussy/sopa).
-
 ## Installation
 
 Requirement: `python>=3.9`
