@@ -15,6 +15,8 @@ Check [the documentation](https://quentinblampey.github.io/spatialdata_xenium_ex
 
 > *Xenium Explorer* is a registered trademark of 10x Genomics. The Xenium Explorer is licensed for usage on Xenium data.
 
+⚠️ This repository is not active anymore. Please refer to [Sopa](https://github.com/gustaveroussy/sopa), which includes this conversion tool, and is still actively maintained.
+
 ## Installation
 
 Requirement: `python>=3.9`
