@@ -13,7 +13,7 @@ Converting any [`SpatialData`](https://github.com/scverse/spatialdata) object in
 
 Check [the documentation](https://quentinblampey.github.io/spatialdata_xenium_explorer/) to get started quickly.
 
-> *Xenium Explorer* is a registered trademark of 10x Genomics. The Xenium Explorer is licensed for usage on Xenium data.
+> *Xenium Explorer* is a registered trademark of 10x Genomics. The Xenium Explorer is licensed for usage on Xenium data (more details [here](https://www.10xgenomics.com/legal/end-user-software-license-agreement)).
 
 ⚠️ This repository is not active anymore. Please refer to [Sopa](https://github.com/gustaveroussy/sopa), which includes this conversion tool, and is still actively maintained.
 
